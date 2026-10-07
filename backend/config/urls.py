@@ -4,11 +4,13 @@ from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
+from apps.accounts.views import MeView
 from apps.core.views import health
 
 # API routes have no trailing slash: the Next.js proxy strips them.
 api_urlpatterns = [
     path("health", health, name="health"),
+    path("me", MeView.as_view(), name="me"),
     path("schema", SpectacularAPIView.as_view(), name="schema"),
     path("docs", SpectacularSwaggerView.as_view(url_name="schema"), name="docs"),
 ]

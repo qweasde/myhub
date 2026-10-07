@@ -1,7 +1,8 @@
 name: myhub
 
+# Shared by backend, worker and beat. The image is built once (by `backend`) and reused.
 x-backend: &backend
-  build: ./backend
+  image: myhub-backend
   env_file: ./backend/.env
   environment:
     DATABASE_URL: postgres://myhub:myhub@db:5432/myhub
@@ -56,19 +57,25 @@ services:
 
   backend:
     <<: *backend
+    build: ./backend
     command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     ports: ["8000:8000"]
 
   worker:
     <<: *backend
+    pull_policy: never
     command: celery -A config worker -l info
 
   beat:
     <<: *backend
-    command: celery -A config beat -l info
+    pull_policy: never
+    command: celery -A config beat -l info --schedule /tmp/celerybeat-schedule
 
   frontend:
     build: ./frontend
+    # node_modules lives in a volume that survives container recreation, so sync it
+    # with package-lock.json on start (fast no-op when nothing changed)
+    command: sh -c "npm install --no-audit --no-fund && npm run dev -- --hostname 0.0.0.0"
     environment:
       BACKEND_URL: http://backend:8000
     ports: ["3000:3000"]
