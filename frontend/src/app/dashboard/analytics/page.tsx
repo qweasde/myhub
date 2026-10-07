@@ -1,6 +1,5 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useState } from "react";
 import {
@@ -17,20 +16,9 @@ import {
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { api } from "@/lib/api";
+import { type Analytics, type Period, PERIODS, useAnalytics } from "@/lib/analytics";
 import { useMe } from "@/lib/session";
 import { cn } from "@/lib/utils";
-
-type Analytics = {
-  days: number;
-  totals: { views: number; unique_visitors: number; clicks: number; ctr: number };
-  daily: { date: string; views: number; unique_visitors: number; clicks: number }[];
-  top_links: { id: number | null; title: string; clicks: number }[];
-  referrers: { host: string; views: number }[];
-  devices: { device: string; views: number }[];
-};
-
-const PERIODS = [7, 30, 90] as const;
 
 // Categorical slots 1-2 of the reference palette (validated: CVD ΔE 24.7, all >= 3:1 on light)
 const SERIES = [
@@ -45,12 +33,8 @@ const dayLabel = (iso: string) =>
   new Date(`${iso}T00:00:00`).toLocaleDateString("ru-RU", { day: "numeric", month: "short" });
 
 export default function AnalyticsPage() {
-  const [days, setDays] = useState<(typeof PERIODS)[number]>(30);
-  const { data, isPending } = useQuery({
-    queryKey: ["me", "analytics", days],
-    queryFn: () => api<Analytics>(`/me/analytics?days=${days}`),
-    placeholderData: (previous) => previous,
-  });
+  const [days, setDays] = useState<Period>(30);
+  const { data, isPending } = useAnalytics(days);
 
   return (
     <>

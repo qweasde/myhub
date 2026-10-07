@@ -82,6 +82,25 @@ class TrackView(APIView):
 class MyAnalyticsView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @staticmethod
+    def previous_totals(user, start, days) -> dict:
+        """Same-length period right before `start`, for "+12% vs previous week"."""
+        prev_start = start - timedelta(days=days)
+        events = AnalyticsEvent.objects.filter(
+            profile__user=user, created_at__date__gte=prev_start, created_at__date__lt=start
+        )
+        per_day = (
+            events.filter(type="view")
+            .annotate(day=TruncDate("created_at"))
+            .values("day")
+            .annotate(n=Count("visitor", distinct=True))
+        )
+        return {
+            "views": events.filter(type="view").count(),
+            "unique_visitors": sum(row["n"] for row in per_day),
+            "clicks": events.filter(type="click").count(),
+        }
+
     @extend_schema(
         parameters=[OpenApiParameter("days", int, enum=list(PERIODS), default=30)],
         responses={200: dict},
@@ -138,6 +157,7 @@ class MyAnalyticsView(APIView):
                     "clicks": total_clicks,
                     "ctr": round(total_clicks / total_views, 4) if total_views else 0,
                 },
+                "previous": self.previous_totals(request.user, start, days),
                 "daily": daily,
                 "top_links": [
                     {

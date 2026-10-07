@@ -15,12 +15,4 @@ export const getPublicProfile = cache(async (username: string): Promise<ProfileV
   }
 });
 
-export function profileTitle(profile: ProfileViewData): string {
-  const name = profile.display_name || `@${profile.username}`;
-  return profile.profession ? `${name} — ${profile.profession}` : name;
-}
-
-export function profileDescription(profile: ProfileViewData): string {
-  if (profile.bio) return profile.bio.length > 160 ? `${profile.bio.slice(0, 157).trimEnd()}…` : profile.bio;
-  return `${profile.display_name || `@${profile.username}`} на MyHub: проекты, навыки и контакты.`;
-}
+export { profileDescription, profileTitle } from "@/lib/profile-text";

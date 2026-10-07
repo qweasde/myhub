@@ -133,3 +133,14 @@ def test_seed_demo_analytics(db):
     assert events.filter(type="click").exists()
     oldest = events.order_by("created_at").first().created_at
     assert (timezone.now() - oldest).days >= 12
+
+
+def test_previous_period_totals(api, user):
+    track(visitor("1.1.1.1"), type="view")
+    track(visitor("2.2.2.2"), type="view")
+    AnalyticsEvent.objects.update(created_at=timezone.now() - timedelta(days=9))
+    track(visitor("3.3.3.3"), type="view")
+
+    data = api.get("/api/v1/me/analytics?days=7").json()
+    assert data["totals"]["views"] == 1
+    assert data["previous"] == {"views": 2, "unique_visitors": 2, "clicks": 0}
