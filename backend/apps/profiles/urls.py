@@ -8,6 +8,9 @@ router.register("me/links", views.MyLinksViewSet, basename="my-links")
 router.register("me/projects", views.MyProjectsViewSet, basename="my-projects")
 router.register("me/skills", views.MySkillsViewSet, basename="my-skills")
 router.register("me/blocks", views.MyBlocksViewSet, basename="my-blocks")
+router.register("me/experience", views.MyExperienceViewSet, basename="my-experience")
+router.register("me/education", views.MyEducationViewSet, basename="my-education")
+router.register("me/languages", views.MyLanguagesViewSet, basename="my-languages")
 
 urlpatterns = [
     path("me/profile", views.MyProfileView.as_view(), name="my-profile"),

@@ -6,6 +6,7 @@ import { LinkIcon } from "@/components/link-icon";
 import type { Project, PublicProfile } from "@/lib/api";
 import { type AnyBlock, type BlockConfigs, blockTitle } from "@/lib/blocks";
 import { THEMES } from "@/lib/themes";
+import { educationPeriod, experiencePeriod, LEVEL_LABELS } from "@/lib/resume";
 import { displayUrl } from "@/lib/url";
 import { cn } from "@/lib/utils";
 
@@ -86,6 +87,62 @@ function BlockView({ block, profile, preview, theme }: { block: AnyBlock; theme:
         </Section>
       ) : (
         <Placeholder show={preview}>Нет навыков</Placeholder>
+      );
+    case "experience":
+      return profile.experience.length ? (
+        <Section title={blockTitle(block)} theme={theme}>
+          <ol className="flex flex-col gap-6">
+            {profile.experience.map((job) => (
+              <li key={job.id} className="flex flex-col gap-1">
+                <div className="flex flex-wrap items-baseline justify-between gap-x-4">
+                  <h3 className="font-medium">{job.position}</h3>
+                  <span className="text-sm text-muted-foreground">{experiencePeriod(job)}</span>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  {[job.company, job.location].filter(Boolean).join(" · ")}
+                </p>
+                {job.description && <p className="mt-1 text-sm whitespace-pre-line">{job.description}</p>}
+              </li>
+            ))}
+          </ol>
+        </Section>
+      ) : (
+        <Placeholder show={preview}>Добавьте опыт работы в разделе «Резюме»</Placeholder>
+      );
+    case "education":
+      return profile.education.length ? (
+        <Section title={blockTitle(block)} theme={theme}>
+          <ol className="flex flex-col gap-4">
+            {profile.education.map((item) => (
+              <li key={item.id} className="flex flex-col gap-0.5">
+                <div className="flex flex-wrap items-baseline justify-between gap-x-4">
+                  <h3 className="font-medium">{item.institution}</h3>
+                  <span className="text-sm text-muted-foreground">{educationPeriod(item)}</span>
+                </div>
+                {(item.degree || item.field) && (
+                  <p className="text-sm text-muted-foreground">{[item.degree, item.field].filter(Boolean).join(", ")}</p>
+                )}
+                {item.description && <p className="mt-1 text-sm whitespace-pre-line">{item.description}</p>}
+              </li>
+            ))}
+          </ol>
+        </Section>
+      ) : (
+        <Placeholder show={preview}>Добавьте образование в разделе «Резюме»</Placeholder>
+      );
+    case "languages":
+      return profile.languages.length ? (
+        <Section title={blockTitle(block)} theme={theme}>
+          <ul className="flex flex-wrap gap-2">
+            {profile.languages.map((lang) => (
+              <li key={lang.id} className={cn("px-3 py-1 text-sm", theme.chip)}>
+                {lang.name} <span className="text-muted-foreground">· {LEVEL_LABELS[lang.level]}</span>
+              </li>
+            ))}
+          </ul>
+        </Section>
+      ) : (
+        <Placeholder show={preview}>Добавьте языки в разделе «Резюме»</Placeholder>
       );
     case "contact":
       return profile.contact_email ? (

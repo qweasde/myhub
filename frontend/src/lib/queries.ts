@@ -2,7 +2,19 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { api, json, uploadImage, type Block, type Link, type Profile, type Project, type Skill } from "@/lib/api";
+import {
+  api,
+  json,
+  uploadImage,
+  type Block,
+  type Education,
+  type Experience,
+  type Link,
+  type Profile,
+  type Project,
+  type Skill,
+  type SpokenLanguage,
+} from "@/lib/api";
 
 export const keys = {
   profile: ["me", "profile"] as const,
@@ -46,7 +58,15 @@ export function useAvatar() {
 
 // --- Ordered collections: links, projects, skills, blocks ----------------
 
-type Collections = { links: Link; projects: Project; skills: Skill; blocks: Block };
+type Collections = {
+  links: Link;
+  projects: Project;
+  skills: Skill;
+  blocks: Block;
+  experience: Experience;
+  education: Education;
+  languages: SpokenLanguage;
+};
 export type CollectionName = keyof Collections;
 
 export function useCollection<N extends CollectionName>(name: N) {

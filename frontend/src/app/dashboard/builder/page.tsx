@@ -1,7 +1,10 @@
 "use client";
 
 import {
+  BriefcaseBusinessIcon,
   FolderKanbanIcon,
+  GraduationCapIcon,
+  LanguagesIcon,
   LinkIcon,
   MailIcon,
   PlusIcon,
@@ -45,6 +48,9 @@ const ICONS: Record<BlockType, LucideIcon> = {
   projects: FolderKanbanIcon,
   skills: SparklesIcon,
   contact: MailIcon,
+  experience: BriefcaseBusinessIcon,
+  education: GraduationCapIcon,
+  languages: LanguagesIcon,
 };
 
 export default function BuilderPage() {

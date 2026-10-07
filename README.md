@@ -59,7 +59,7 @@ cd frontend && npm run api:types
 
 ```bash
 cd backend && ruff check . && ruff format --check . && pytest
-cd frontend && npm run lint && npm run build
+cd frontend && npm run lint && NEXT_DIST_DIR=.next-check npm run build   # отдельная папка: не мешает запущенному npm run dev
 ```
 
 ## Roadmap MVP 0.1
@@ -77,4 +77,4 @@ cd frontend && npm run lint && npm run build
 1. [x] QR-код публичной страницы (в «Обзоре»)
 2. [ ] Вход и регистрация через GitHub (OAuth)
 3. [ ] Интеграция с GitHub: репозитории, языки, звёзды, блок «GitHub», синхронизация через Celery
-4. [ ] Резюме: опыт, образование, языки; блок на странице и скачивание PDF
+4. [x] Резюме: опыт, образование, языки; блоки на странице и скачивание PDF (`/u/<username>/resume.pdf`)

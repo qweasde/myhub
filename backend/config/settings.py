@@ -140,6 +140,11 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "MyHub API",
     "VERSION": "0.1.0",
     "SERVE_INCLUDE_SCHEMA": False,
+    # Stable enum names for the generated TypeScript types (two serializers have a "type" field)
+    "ENUM_NAME_OVERRIDES": {
+        "BlockTypeEnum": "apps.profiles.models.Block.Type",
+        "EventTypeEnum": "apps.analytics.models.AnalyticsEvent.Type",
+    },
 }
 
 # allauth (headless, sessions via cookie; frontend proxies /_allauth and /api)

@@ -1,6 +1,6 @@
 import type { components } from "@/lib/api-schema";
 
-export type BlockType = components["schemas"]["TypeEnum"];
+export type BlockType = components["schemas"]["BlockTypeEnum"];
 
 // Mirrors the per-type config serializers in backend/apps/profiles/serializers.py
 export type BlockConfigs = {
@@ -10,6 +10,9 @@ export type BlockConfigs = {
   projects: { title: string; featured_only: boolean };
   skills: { title: string };
   contact: { title: string; text: string };
+  experience: { title: string };
+  education: { title: string };
+  languages: { title: string };
 };
 
 export type AnyBlock = { [T in BlockType]: { id: number; type: T; config: BlockConfigs[T] } }[BlockType];
@@ -38,6 +41,11 @@ const titleField = (placeholder: string): Field => ({
   placeholder,
   max: 60,
 });
+
+// Resume sections: data lives on /dashboard/resume, the block only sets the title
+function resumeBlock(label: string, description: string): BlockMeta {
+  return { label, description, defaultTitle: label, dataHref: "/dashboard/resume", fields: [titleField(label)] };
+}
 
 export const BLOCKS: Record<BlockType, BlockMeta> = {
   profile: {
@@ -105,6 +113,9 @@ export const BLOCKS: Record<BlockType, BlockMeta> = {
       },
     ],
   },
+  experience: resumeBlock("Опыт работы", "Места работы и должности"),
+  education: resumeBlock("Образование", "Вузы и курсы"),
+  languages: resumeBlock("Языки", "Языки и уровень владения"),
 };
 
 export const BLOCK_TYPES = Object.keys(BLOCKS) as BlockType[];

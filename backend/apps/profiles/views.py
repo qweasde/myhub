@@ -12,9 +12,21 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .images import process_image
-from .models import Block, Link, Profile, Project, Skill, create_default_blocks
+from .models import (
+    Block,
+    Education,
+    Experience,
+    Link,
+    Profile,
+    Project,
+    Skill,
+    SpokenLanguage,
+    create_default_blocks,
+)
 from .serializers import (
     BlockSerializer,
+    EducationSerializer,
+    ExperienceSerializer,
     ImageUploadSerializer,
     LinkSerializer,
     ProfileSerializer,
@@ -22,6 +34,7 @@ from .serializers import (
     PublicProfileSerializer,
     ReorderSerializer,
     SkillSerializer,
+    SpokenLanguageSerializer,
 )
 
 AVATAR_SIZE = 512
@@ -184,13 +197,31 @@ class MyBlocksViewSet(OwnedOrderedViewSet):
         instance.delete()
 
 
+class MyExperienceViewSet(OwnedOrderedViewSet):
+    model = Experience
+    serializer_class = ExperienceSerializer
+    limit = 30
+
+
+class MyEducationViewSet(OwnedOrderedViewSet):
+    model = Education
+    serializer_class = EducationSerializer
+    limit = 20
+
+
+class MyLanguagesViewSet(OwnedOrderedViewSet):
+    model = SpokenLanguage
+    serializer_class = SpokenLanguageSerializer
+    limit = 15
+
+
 class PublicProfileView(generics.RetrieveAPIView):
     serializer_class = PublicProfileSerializer
     permission_classes = [AllowAny]
 
     def get_object(self):
         queryset = Profile.objects.select_related("user").prefetch_related(
-            "blocks", "links", "projects", "skills"
+            "blocks", "links", "projects", "skills", "experience", "education", "languages"
         )
         return get_object_or_404(
             queryset,

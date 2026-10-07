@@ -3,7 +3,16 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from apps.accounts.models import User
-from apps.profiles.models import Block, Link, Profile, Project, Skill
+from apps.profiles.models import (
+    Block,
+    Education,
+    Experience,
+    Link,
+    Profile,
+    Project,
+    Skill,
+    SpokenLanguage,
+)
 from apps.profiles.serializers import detect_icon
 
 USERNAME = "demo"
@@ -76,6 +85,48 @@ SKILLS = [
     "Docker", "Kafka", "S3", "Git", "Linux",
 ]  # fmt: skip
 
+EXPERIENCE = [
+    {
+        "position": "Senior backend developer",
+        "company": "Финтех-стартап «Кошелёк»",
+        "location": "Москва, удалённо",
+        "start_date": "2023-04-01",
+        "end_date": None,
+        "description": "Платёжный сервис на Django и Celery: подписки, вебхуки банков, отчёты. "
+        "Ускорил тяжёлые отчёты в 8 раз за счёт индексов и денормализации.",
+    },
+    {
+        "position": "Python developer",
+        "company": "Агентство «Пиксель»",
+        "location": "Москва",
+        "start_date": "2020-09-01",
+        "end_date": "2023-03-31",
+        "description": "Бэкенды для интернет-магазинов и CRM: DRF, PostgreSQL, "
+        "интеграции с 1С и маркетплейсами.",
+    },
+]
+
+EDUCATION = [
+    {
+        "institution": "МГТУ им. Н. Э. Баумана",
+        "degree": "Бакалавр",
+        "field": "Программная инженерия",
+        "start_year": 2016,
+        "end_year": 2020,
+        "description": "",
+    },
+    {
+        "institution": "Яндекс Практикум",
+        "degree": "Курс",
+        "field": "Мидл Python-разработчик",
+        "start_year": 2021,
+        "end_year": 2021,
+        "description": "",
+    },
+]
+
+LANGUAGES = [("Русский", "native"), ("English", "B2"), ("Deutsch", "A2")]
+
 BLOCKS = [
     (Block.Type.PROFILE, {}),
     (Block.Type.LINKS, {"layout": "list"}),
@@ -92,6 +143,9 @@ BLOCKS = [
     ),
     (Block.Type.PROJECTS, {"title": "Проекты", "featured_only": False}),
     (Block.Type.SKILLS, {"title": "Технологии"}),
+    (Block.Type.EXPERIENCE, {"title": "Опыт работы"}),
+    (Block.Type.EDUCATION, {"title": "Образование"}),
+    (Block.Type.LANGUAGES, {"title": "Языки"}),
     (
         Block.Type.CONTACT,
         {
@@ -126,7 +180,7 @@ class Command(BaseCommand):
         for project in profile.projects.all():
             if project.image:
                 project.image.delete(save=False)
-        for model in (Block, Link, Project, Skill):
+        for model in (Block, Link, Project, Skill, Experience, Education, SpokenLanguage):
             model.objects.filter(profile=profile).delete()
 
         Link.objects.bulk_create(
@@ -139,6 +193,17 @@ class Command(BaseCommand):
         )
         Skill.objects.bulk_create(
             Skill(profile=profile, name=name, order=i) for i, name in enumerate(SKILLS, start=1)
+        )
+        Experience.objects.bulk_create(
+            Experience(profile=profile, order=i, **data)
+            for i, data in enumerate(EXPERIENCE, start=1)
+        )
+        Education.objects.bulk_create(
+            Education(profile=profile, order=i, **data) for i, data in enumerate(EDUCATION, start=1)
+        )
+        SpokenLanguage.objects.bulk_create(
+            SpokenLanguage(profile=profile, name=name, level=level, order=i)
+            for i, (name, level) in enumerate(LANGUAGES, start=1)
         )
         Block.objects.bulk_create(
             Block(profile=profile, type=block_type, config=config, order=i)

@@ -122,6 +122,7 @@ def test_seed_demo_is_idempotent(db, capsys):
     call_command("seed_demo")
     demo = User.objects.get(username="demo")
     assert demo.profile.links.count() == 6
-    assert demo.profile.blocks.count() == 6
+    assert demo.profile.blocks.count() == 9
+    assert demo.profile.experience.filter(end_date__isnull=True).count() == 1
     assert demo.profile.links.get(title="GitHub").icon == "github"
     assert "Сброшен @demo" in capsys.readouterr().out

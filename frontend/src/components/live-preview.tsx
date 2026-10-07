@@ -16,9 +16,14 @@ function usePreviewData(): ProfileViewData | undefined {
   const links = useCollection("links").list.data;
   const projects = useCollection("projects").list.data;
   const skills = useCollection("skills").list.data;
+  const experience = useCollection("experience").list.data;
+  const education = useCollection("education").list.data;
+  const languages = useCollection("languages").list.data;
 
   return useMemo(() => {
-    if (!profile || !blocks || !links || !projects || !skills) return undefined;
+    if (!profile || !blocks || !links || !projects || !skills || !experience || !education || !languages) {
+      return undefined;
+    }
     return {
       username: profile.username,
       display_name: profile.display_name,
@@ -33,8 +38,11 @@ function usePreviewData(): ProfileViewData | undefined {
       links: links.filter((l) => l.is_visible ?? true).map(({ id, title, url, icon }) => ({ id, title, url, icon })),
       projects,
       skills: skills.map((s) => s.name),
+      experience,
+      education,
+      languages,
     };
-  }, [profile, blocks, links, projects, skills]);
+  }, [profile, blocks, links, projects, skills, experience, education, languages]);
 }
 
 function PreviewBody() {

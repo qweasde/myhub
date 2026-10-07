@@ -5,7 +5,7 @@ from django.core.validators import URLValidator, validate_email
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from .models import Block, Link, Profile, Project, Skill
+from .models import Block, Education, Experience, Link, Profile, Project, Skill, SpokenLanguage
 
 
 @extend_schema_field({"type": "string", "format": "uri", "nullable": True, "readOnly": True})
@@ -145,6 +145,66 @@ class SkillSerializer(serializers.ModelSerializer):
         return value
 
 
+class ExperienceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Experience
+        fields = [
+            "id",
+            "position",
+            "company",
+            "location",
+            "start_date",
+            "end_date",
+            "description",
+            "order",
+        ]
+        read_only_fields = ["order"]
+
+    def validate(self, attrs):
+        start = attrs.get("start_date", getattr(self.instance, "start_date", None))
+        end = attrs.get("end_date", getattr(self.instance, "end_date", None))
+        if start and end and end < start:
+            raise serializers.ValidationError({"end_date": "Дата окончания раньше даты начала."})
+        return attrs
+
+
+class EducationSerializer(serializers.ModelSerializer):
+    start_year = serializers.IntegerField(
+        min_value=1950, max_value=2100, required=False, allow_null=True
+    )
+    end_year = serializers.IntegerField(
+        min_value=1950, max_value=2100, required=False, allow_null=True
+    )
+
+    class Meta:
+        model = Education
+        fields = [
+            "id",
+            "institution",
+            "degree",
+            "field",
+            "start_year",
+            "end_year",
+            "description",
+            "order",
+        ]
+        read_only_fields = ["order"]
+
+    def validate(self, attrs):
+        start = attrs.get("start_year", getattr(self.instance, "start_year", None))
+        end = attrs.get("end_year", getattr(self.instance, "end_year", None))
+        if start and end and end < start:
+            raise serializers.ValidationError({"end_year": "Год окончания раньше года начала."})
+        return attrs
+
+
+class SpokenLanguageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SpokenLanguage
+        fields = ["id", "name", "level", "order"]
+        read_only_fields = ["order"]
+
+
 class ImageUploadSerializer(serializers.Serializer):
     image = serializers.ImageField()
 
@@ -180,6 +240,10 @@ class SkillsBlockConfig(TitledConfig):
     pass
 
 
+class ResumeBlockConfig(TitledConfig):
+    pass
+
+
 class ContactBlockConfig(TitledConfig):
     text = serializers.CharField(max_length=500, allow_blank=True, default="")
 
@@ -191,6 +255,9 @@ BLOCK_CONFIGS = {
     Block.Type.PROJECTS: ProjectsBlockConfig,
     Block.Type.SKILLS: SkillsBlockConfig,
     Block.Type.CONTACT: ContactBlockConfig,
+    Block.Type.EXPERIENCE: ResumeBlockConfig,
+    Block.Type.EDUCATION: ResumeBlockConfig,
+    Block.Type.LANGUAGES: ResumeBlockConfig,
 }
 
 
@@ -242,6 +309,9 @@ class PublicProfileSerializer(ProfileSerializer):
     links = serializers.SerializerMethodField()
     projects = ProjectSerializer(many=True, read_only=True)
     skills = serializers.SlugRelatedField(slug_field="name", many=True, read_only=True)
+    experience = ExperienceSerializer(many=True, read_only=True)
+    education = EducationSerializer(many=True, read_only=True)
+    languages = SpokenLanguageSerializer(many=True, read_only=True)
 
     class Meta(ProfileSerializer.Meta):
         fields = [f for f in ProfileSerializer.Meta.fields if f != "is_published"] + [
@@ -249,6 +319,9 @@ class PublicProfileSerializer(ProfileSerializer):
             "links",
             "projects",
             "skills",
+            "experience",
+            "education",
+            "languages",
         ]
 
     @extend_schema_field(PublicBlockSerializer(many=True))

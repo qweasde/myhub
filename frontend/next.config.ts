@@ -3,7 +3,9 @@ import type { NextConfig } from "next";
 const backendUrl = process.env.BACKEND_URL ?? "http://localhost:8000";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Lets a check build run next to a running `next dev` without touching its .next folder:
+  // NEXT_DIST_DIR=.next-check npm run build
+  distDir: process.env.NEXT_DIST_DIR ?? ".next",
   cacheComponents: true,
   partialPrefetching: true,
   turbopack: {

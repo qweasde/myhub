@@ -3,6 +3,7 @@
 import {
   ChartLineIcon,
   ExternalLinkIcon,
+  FileTextIcon,
   FolderKanbanIcon,
   LayoutDashboardIcon,
   LayoutTemplateIcon,
@@ -28,6 +29,7 @@ const NAV = [
   { href: "/dashboard/links", label: "Ссылки", icon: LinkIcon },
   { href: "/dashboard/projects", label: "Проекты", icon: FolderKanbanIcon },
   { href: "/dashboard/skills", label: "Навыки", icon: SparklesIcon },
+  { href: "/dashboard/resume", label: "Резюме", icon: FileTextIcon },
   { href: "/dashboard/analytics", label: "Аналитика", icon: ChartLineIcon },
 ];
 
@@ -38,6 +40,7 @@ const PREVIEW_PAGES = new Set([
   "/dashboard/links",
   "/dashboard/projects",
   "/dashboard/skills",
+  "/dashboard/resume",
 ]);
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {

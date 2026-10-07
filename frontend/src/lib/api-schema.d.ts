@@ -36,6 +36,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/analytics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["me_analytics_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me/blocks": {
         parameters: {
             query?: never;
@@ -83,6 +99,165 @@ export interface paths {
         put?: never;
         /** @description CRUD over the current user's items + bulk reorder. Subclasses set model/serializer/limit. */
         post: operations["me_blocks_reorder_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/education": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description CRUD over the current user's items + bulk reorder. Subclasses set model/serializer/limit. */
+        get: operations["me_education_list"];
+        put?: never;
+        /** @description CRUD over the current user's items + bulk reorder. Subclasses set model/serializer/limit. */
+        post: operations["me_education_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/education/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** @description CRUD over the current user's items + bulk reorder. Subclasses set model/serializer/limit. */
+        delete: operations["me_education_destroy"];
+        options?: never;
+        head?: never;
+        /** @description CRUD over the current user's items + bulk reorder. Subclasses set model/serializer/limit. */
+        patch: operations["me_education_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/me/education/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description CRUD over the current user's items + bulk reorder. Subclasses set model/serializer/limit. */
+        post: operations["me_education_reorder_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/experience": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description CRUD over the current user's items + bulk reorder. Subclasses set model/serializer/limit. */
+        get: operations["me_experience_list"];
+        put?: never;
+        /** @description CRUD over the current user's items + bulk reorder. Subclasses set model/serializer/limit. */
+        post: operations["me_experience_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/experience/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** @description CRUD over the current user's items + bulk reorder. Subclasses set model/serializer/limit. */
+        delete: operations["me_experience_destroy"];
+        options?: never;
+        head?: never;
+        /** @description CRUD over the current user's items + bulk reorder. Subclasses set model/serializer/limit. */
+        patch: operations["me_experience_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/me/experience/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description CRUD over the current user's items + bulk reorder. Subclasses set model/serializer/limit. */
+        post: operations["me_experience_reorder_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/languages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description CRUD over the current user's items + bulk reorder. Subclasses set model/serializer/limit. */
+        get: operations["me_languages_list"];
+        put?: never;
+        /** @description CRUD over the current user's items + bulk reorder. Subclasses set model/serializer/limit. */
+        post: operations["me_languages_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/languages/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** @description CRUD over the current user's items + bulk reorder. Subclasses set model/serializer/limit. */
+        delete: operations["me_languages_destroy"];
+        options?: never;
+        head?: never;
+        /** @description CRUD over the current user's items + bulk reorder. Subclasses set model/serializer/limit. */
+        patch: operations["me_languages_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/me/languages/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description CRUD over the current user's items + bulk reorder. Subclasses set model/serializer/limit. */
+        post: operations["me_languages_reorder_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -315,15 +490,73 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/track": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Beacon from the public page. Always 204: never reveals whether anything was counted. */
+        post: operations["track_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         Block: {
             readonly id: number;
-            type: components["schemas"]["TypeEnum"];
+            type: components["schemas"]["BlockTypeEnum"];
             is_visible?: boolean;
             config?: unknown;
+            readonly order: number;
+        };
+        /**
+         * @description * `profile` - Шапка профиля
+         *     * `links` - Ссылки
+         *     * `text` - Текст
+         *     * `projects` - Проекты
+         *     * `skills` - Навыки
+         *     * `contact` - Контакты
+         *     * `experience` - Опыт работы
+         *     * `education` - Образование
+         *     * `languages` - Языки
+         * @enum {string}
+         */
+        BlockTypeEnum: "profile" | "links" | "text" | "projects" | "skills" | "contact" | "experience" | "education" | "languages";
+        Education: {
+            readonly id: number;
+            institution: string;
+            degree?: string;
+            field?: string;
+            start_year?: number | null;
+            end_year?: number | null;
+            description?: string;
+            readonly order: number;
+        };
+        /**
+         * @description * `view` - View
+         *     * `click` - Click
+         * @enum {string}
+         */
+        EventTypeEnum: "view" | "click";
+        Experience: {
+            readonly id: number;
+            position: string;
+            company: string;
+            location?: string;
+            /** Format: date */
+            start_date: string;
+            /** Format: date */
+            end_date?: string | null;
+            description?: string;
             readonly order: number;
         };
         /**
@@ -344,6 +577,17 @@ export interface components {
             /** Format: uri */
             image: string;
         };
+        /**
+         * @description * `A1` - A1 — начальный
+         *     * `A2` - A2 — элементарный
+         *     * `B1` - B1 — средний
+         *     * `B2` - B2 — выше среднего
+         *     * `C1` - C1 — продвинутый
+         *     * `C2` - C2 — свободный
+         *     * `native` - Родной
+         * @enum {string}
+         */
+        LevelEnum: "A1" | "A2" | "B1" | "B2" | "C1" | "C2" | "native";
         Link: {
             readonly id: number;
             title: string;
@@ -366,9 +610,31 @@ export interface components {
         };
         PatchedBlock: {
             readonly id?: number;
-            type?: components["schemas"]["TypeEnum"];
+            type?: components["schemas"]["BlockTypeEnum"];
             is_visible?: boolean;
             config?: unknown;
+            readonly order?: number;
+        };
+        PatchedEducation: {
+            readonly id?: number;
+            institution?: string;
+            degree?: string;
+            field?: string;
+            start_year?: number | null;
+            end_year?: number | null;
+            description?: string;
+            readonly order?: number;
+        };
+        PatchedExperience: {
+            readonly id?: number;
+            position?: string;
+            company?: string;
+            location?: string;
+            /** Format: date */
+            start_date?: string;
+            /** Format: date */
+            end_date?: string | null;
+            description?: string;
             readonly order?: number;
         };
         PatchedLink: {
@@ -409,6 +675,12 @@ export interface components {
             name?: string;
             readonly order?: number;
         };
+        PatchedSpokenLanguage: {
+            readonly id?: number;
+            name?: string;
+            level?: components["schemas"]["LevelEnum"];
+            readonly order?: number;
+        };
         Profile: {
             readonly username: string;
             display_name?: string;
@@ -436,7 +708,7 @@ export interface components {
         };
         PublicBlock: {
             readonly id: number;
-            type: components["schemas"]["TypeEnum"];
+            type: components["schemas"]["BlockTypeEnum"];
             config?: unknown;
         };
         PublicLink: {
@@ -461,6 +733,9 @@ export interface components {
             readonly links: components["schemas"]["PublicLink"][];
             readonly projects: components["schemas"]["Project"][];
             readonly skills: string[];
+            readonly experience: components["schemas"]["Experience"][];
+            readonly education: components["schemas"]["Education"][];
+            readonly languages: components["schemas"]["SpokenLanguage"][];
         };
         Reorder: {
             ids: number[];
@@ -468,6 +743,12 @@ export interface components {
         Skill: {
             readonly id: number;
             name: string;
+            readonly order: number;
+        };
+        SpokenLanguage: {
+            readonly id: number;
+            name: string;
+            level: components["schemas"]["LevelEnum"];
             readonly order: number;
         };
         /**
@@ -479,16 +760,12 @@ export interface components {
          * @enum {string}
          */
         ThemeEnum: "minimal" | "dark" | "developer" | "portfolio" | "creative";
-        /**
-         * @description * `profile` - Шапка профиля
-         *     * `links` - Ссылки
-         *     * `text` - Текст
-         *     * `projects` - Проекты
-         *     * `skills` - Навыки
-         *     * `contact` - Контакты
-         * @enum {string}
-         */
-        TypeEnum: "profile" | "links" | "text" | "projects" | "skills" | "contact";
+        Track: {
+            username: string;
+            type: components["schemas"]["EventTypeEnum"];
+            link?: number;
+            referrer?: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -534,6 +811,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Me"];
+                };
+            };
+        };
+    };
+    me_analytics_retrieve: {
+        parameters: {
+            query?: {
+                days?: 30 | 7 | 90;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
         };
@@ -632,6 +932,357 @@ export interface operations {
         };
     };
     me_blocks_reorder_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Reorder"];
+                "application/x-www-form-urlencoded": components["schemas"]["Reorder"];
+                "multipart/form-data": components["schemas"]["Reorder"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    me_education_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Education"][];
+                };
+            };
+        };
+    };
+    me_education_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Education"];
+                "application/x-www-form-urlencoded": components["schemas"]["Education"];
+                "multipart/form-data": components["schemas"]["Education"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Education"];
+                };
+            };
+        };
+    };
+    me_education_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this education. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    me_education_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this education. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedEducation"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedEducation"];
+                "multipart/form-data": components["schemas"]["PatchedEducation"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Education"];
+                };
+            };
+        };
+    };
+    me_education_reorder_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Reorder"];
+                "application/x-www-form-urlencoded": components["schemas"]["Reorder"];
+                "multipart/form-data": components["schemas"]["Reorder"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    me_experience_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Experience"][];
+                };
+            };
+        };
+    };
+    me_experience_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Experience"];
+                "application/x-www-form-urlencoded": components["schemas"]["Experience"];
+                "multipart/form-data": components["schemas"]["Experience"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Experience"];
+                };
+            };
+        };
+    };
+    me_experience_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this experience. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    me_experience_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this experience. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedExperience"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedExperience"];
+                "multipart/form-data": components["schemas"]["PatchedExperience"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Experience"];
+                };
+            };
+        };
+    };
+    me_experience_reorder_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Reorder"];
+                "application/x-www-form-urlencoded": components["schemas"]["Reorder"];
+                "multipart/form-data": components["schemas"]["Reorder"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    me_languages_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SpokenLanguage"][];
+                };
+            };
+        };
+    };
+    me_languages_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SpokenLanguage"];
+                "application/x-www-form-urlencoded": components["schemas"]["SpokenLanguage"];
+                "multipart/form-data": components["schemas"]["SpokenLanguage"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SpokenLanguage"];
+                };
+            };
+        };
+    };
+    me_languages_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this spoken language. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    me_languages_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this spoken language. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedSpokenLanguage"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedSpokenLanguage"];
+                "multipart/form-data": components["schemas"]["PatchedSpokenLanguage"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SpokenLanguage"];
+                };
+            };
+        };
+    };
+    me_languages_reorder_create: {
         parameters: {
             query?: never;
             header?: never;
@@ -1184,6 +1835,30 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["PublicProfile"];
                 };
+            };
+        };
+    };
+    track_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Track"];
+                "application/x-www-form-urlencoded": components["schemas"]["Track"];
+                "multipart/form-data": components["schemas"]["Track"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
