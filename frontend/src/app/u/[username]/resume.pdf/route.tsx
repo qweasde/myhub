@@ -2,7 +2,7 @@ import { join } from "node:path";
 import { Document, Font, Link, Page, renderToBuffer, StyleSheet, Text, View } from "@react-pdf/renderer";
 import type { ProfileViewData } from "@/components/profile-view";
 import { api, ApiError } from "@/lib/api";
-import { educationPeriod, experiencePeriod, LEVEL_LABELS } from "@/lib/resume";
+import { educationPeriod, experiencePeriod } from "@/lib/resume";
 import { displayUrl } from "@/lib/url";
 
 // Inter ships as per-script subsets; react-pdf falls back across the fontFamily list,
@@ -28,8 +28,10 @@ const accent = "#2a78d6";
 
 const s = StyleSheet.create({
   page: { padding: 44, fontFamily: ["Inter", "InterCyrillic"], fontSize: 10, color: ink, lineHeight: 1.45 },
-  name: { fontSize: 24, fontWeight: 700 },
-  profession: { fontSize: 13, color: muted, marginTop: 2 },
+  // Explicit line heights: the page-level one is resolved against the 10pt body size,
+  // which made the 24pt name overlap the line below it
+  name: { fontSize: 24, fontWeight: 700, lineHeight: 1.2 },
+  profession: { fontSize: 13, color: muted, marginTop: 2, lineHeight: 1.3 },
   contacts: { flexDirection: "row", flexWrap: "wrap", marginTop: 8, color: muted },
   contact: { marginRight: 14 },
   link: { color: accent, textDecoration: "none" },
@@ -47,7 +49,7 @@ const s = StyleSheet.create({
   },
   item: { marginBottom: 9 },
   row: { flexDirection: "row", justifyContent: "space-between" },
-  title: { fontWeight: 600, fontSize: 11 },
+  title: { fontWeight: 600, fontSize: 11, lineHeight: 1.35 },
   meta: { color: muted },
   text: { marginTop: 2 },
 });
@@ -140,7 +142,9 @@ function Resume({ profile, url }: { profile: ProfileViewData; url: string }) {
 
         {profile.languages.length > 0 && (
           <Section title="Языки">
-            <Text>{profile.languages.map((l) => `${l.name} — ${LEVEL_LABELS[l.level]}`).join(" · ")}</Text>
+            <Text>
+              {profile.languages.map((l) => `${l.name} — ${l.level === "native" ? "родной" : l.level}`).join(" · ")}
+            </Text>
           </Section>
         )}
 
