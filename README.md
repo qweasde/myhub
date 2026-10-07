@@ -7,6 +7,8 @@
 - **backend/** — Django 5.2, DRF, drf-spectacular, django-allauth (headless, сессии), Celery + Redis, django-storages (MinIO/S3), PostgreSQL 17
 - **frontend/** — Next.js 16 (App Router, Cache Components), React 19, TypeScript, Tailwind CSS v4
 
+Публичная страница `/@username` рендерится на сервере в одной из 5 тем, с OG-картинкой (`/u/<username>/opengraph-image`) для превью ссылок; несуществующий профиль отдаёт настоящий 404 (проверка в `frontend/src/proxy.ts`).
+
 Браузер ходит только на Next.js: `/api/*`, `/_allauth/*` и `/media/*` проксируются в Django (rewrites в `frontend/next.config.ts`), поэтому cookie сессии и CSRF работают без CORS. Публичный профиль `/@username` переписывается на маршрут `/u/[username]`.
 
 ## Запуск для разработки
@@ -66,6 +68,6 @@ cd frontend && npm run lint && npm run build
 2. [x] Аккаунты: регистрация/вход через allauth headless, username, защита `/dashboard`
 3. [x] Profile, Links, Projects, Skills: модели, API, страницы dashboard
 4. [x] Blocks: конструктор, drag & drop (dnd-kit), live preview
-5. [ ] Публичная страница `/@username`: темы, OG-теги, адаптив
+5. [x] Публичная страница `/@username`: темы, OG-теги, адаптив
 6. [ ] Аналитика: события, агрегация в Celery, `/dashboard/analytics`
 7. [ ] Деплой на VPS (Docker Compose + Caddy)

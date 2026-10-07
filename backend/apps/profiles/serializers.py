@@ -38,6 +38,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             "website",
             "contact_email",
             "avatar",
+            "theme",
             "is_published",
         ]
 

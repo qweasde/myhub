@@ -35,7 +35,8 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import type { Block } from "@/lib/api";
 import { type AnyBlock, BLOCK_TYPES, BLOCKS, type BlockType, blockTitle } from "@/lib/blocks";
-import { useCollection, useProfile } from "@/lib/queries";
+import { useCollection, useProfile, useUpdateProfile } from "@/lib/queries";
+import { THEME_NAMES, THEMES } from "@/lib/themes";
 import { cn } from "@/lib/utils";
 
 const ICONS: Record<BlockType, LucideIcon> = {
@@ -70,10 +71,13 @@ export default function BuilderPage() {
             <Skeleton className="h-64" />
           )}
         </div>
-        <div className="xl:sticky xl:top-6 xl:self-start">
-          <p className="mb-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">Превью</p>
-          <div className="max-h-[80vh] overflow-y-auto rounded-xl border bg-background p-6 shadow-sm">
-            {preview ? <ProfileView profile={preview} preview /> : <Skeleton className="h-96" />}
+        <div className="flex flex-col gap-4 xl:sticky xl:top-6 xl:self-start">
+          <ThemePicker />
+          <div>
+            <p className="mb-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">Превью</p>
+            <div className="max-h-[75vh] overflow-y-auto rounded-xl border shadow-sm">
+              {preview ? <ProfileView profile={preview} preview /> : <Skeleton className="h-96" />}
+            </div>
           </div>
         </div>
       </div>
@@ -100,12 +104,52 @@ function usePreviewData(): ProfileViewData | undefined {
       website: profile.website,
       contact_email: profile.contact_email,
       avatar: profile.avatar,
+      theme: profile.theme,
       blocks: blocks.filter((b) => b.is_visible ?? true) as unknown as AnyBlock[],
       links: links.filter((l) => l.is_visible ?? true).map(({ id, title, url, icon }) => ({ id, title, url, icon })),
       projects,
       skills: skills.map((s) => s.name),
     };
   }, [profile, blocks, links, projects, skills]);
+}
+
+function ThemePicker() {
+  const { data: profile } = useProfile();
+  const update = useUpdateProfile();
+  const current = update.isPending ? update.variables.theme : profile?.theme;
+
+  return (
+    <div>
+      <p className="mb-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">Тема</p>
+      <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Тема страницы">
+        {THEME_NAMES.map((name) => {
+          const [background, accent] = THEMES[name].swatch;
+          return (
+            <button
+              key={name}
+              type="button"
+              role="radio"
+              aria-checked={current === name}
+              disabled={!profile}
+              onClick={() =>
+                update.mutate({ theme: name }, { onError: () => toast.error("Не удалось сменить тему") })
+              }
+              className={cn(
+                "flex items-center gap-2 rounded-full border py-1.5 pr-3 pl-1.5 text-sm transition-colors hover:bg-muted",
+                current === name && "border-foreground ring-1 ring-foreground",
+              )}
+            >
+              <span
+                className="size-5 rounded-full border"
+                style={{ background: `linear-gradient(135deg, ${background} 50%, ${accent} 50%)` }}
+              />
+              {THEMES[name].label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
 }
 
 function BlockRow({ block }: { block: Block }) {

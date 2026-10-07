@@ -20,6 +20,7 @@ PROFILE = {
     "location": "Москва",
     "website": "https://petrov.dev",
     "contact_email": EMAIL,
+    "theme": "minimal",
     "is_published": True,
 }
 

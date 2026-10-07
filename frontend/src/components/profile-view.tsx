@@ -5,6 +5,7 @@ import NextLink from "next/link";
 import { LinkIcon } from "@/components/link-icon";
 import type { Project, PublicProfile } from "@/lib/api";
 import { type AnyBlock, type BlockConfigs, blockTitle } from "@/lib/blocks";
+import { THEMES } from "@/lib/themes";
 import { displayUrl } from "@/lib/url";
 import { cn } from "@/lib/utils";
 
@@ -14,37 +15,47 @@ type Props = {
   profile: ProfileViewData;
   /** Dashboard preview: show hints for blocks that have no data yet */
   preview?: boolean;
+  className?: string;
 };
 
-export function ProfileView({ profile, preview }: Props) {
+type Theme = (typeof THEMES)[keyof typeof THEMES];
+
+export function ProfileView({ profile, preview, className }: Props) {
+  const themeName = profile.theme ?? "minimal";
+  const theme = THEMES[themeName];
   return (
-    <div className="flex flex-col gap-10">
-      {profile.blocks.map((block) => (
-        <BlockView key={block.id} block={block} profile={profile} preview={preview} />
-      ))}
-      <footer className="pt-6 text-center text-xs text-muted-foreground">
-        Сделано на{" "}
-        <NextLink href="/" className="hover:underline">
-          MyHub
-        </NextLink>
-      </footer>
+    <div
+      data-profile-theme={themeName}
+      className={cn("bg-background text-foreground", theme.page, theme.font, className)}
+    >
+      <div className="mx-auto flex w-full max-w-2xl flex-col gap-10 px-5 py-14">
+        {profile.blocks.map((block) => (
+          <BlockView key={block.id} block={block} profile={profile} preview={preview} theme={theme} />
+        ))}
+        <footer className="pt-6 text-center text-xs text-muted-foreground">
+          Сделано на{" "}
+          <NextLink href="/" className="hover:underline">
+            MyHub
+          </NextLink>
+        </footer>
+      </div>
     </div>
   );
 }
 
-function BlockView({ block, profile, preview }: { block: AnyBlock } & Props) {
+function BlockView({ block, profile, preview, theme }: { block: AnyBlock; theme: Theme } & Props) {
   switch (block.type) {
     case "profile":
-      return <HeaderBlock profile={profile} />;
+      return <HeaderBlock profile={profile} theme={theme} />;
     case "links":
       return profile.links.length ? (
-        <LinksBlock links={profile.links} config={block.config} />
+        <LinksBlock links={profile.links} config={block.config} theme={theme} />
       ) : (
         <Placeholder show={preview}>Нет видимых ссылок</Placeholder>
       );
     case "text":
       return block.config.body || block.config.title ? (
-        <Section title={block.config.title}>
+        <Section title={block.config.title} theme={theme}>
           <p className="whitespace-pre-line">{block.config.body}</p>
         </Section>
       ) : (
@@ -53,8 +64,8 @@ function BlockView({ block, profile, preview }: { block: AnyBlock } & Props) {
     case "projects": {
       const projects = block.config.featured_only ? profile.projects.filter((p) => p.is_featured) : profile.projects;
       return projects.length ? (
-        <Section title={blockTitle(block)}>
-          <ProjectsGrid projects={projects} />
+        <Section title={blockTitle(block)} theme={theme}>
+          <ProjectsGrid projects={projects} theme={theme} />
         </Section>
       ) : (
         <Placeholder show={preview}>
@@ -64,10 +75,10 @@ function BlockView({ block, profile, preview }: { block: AnyBlock } & Props) {
     }
     case "skills":
       return profile.skills.length ? (
-        <Section title={blockTitle(block)}>
+        <Section title={blockTitle(block)} theme={theme}>
           <div className="flex flex-wrap gap-2">
             {profile.skills.map((skill) => (
-              <span key={skill} className="rounded-full border px-3 py-1 text-sm">
+              <span key={skill} className={cn("px-3 py-1 text-sm", theme.chip)}>
                 {skill}
               </span>
             ))}
@@ -78,17 +89,17 @@ function BlockView({ block, profile, preview }: { block: AnyBlock } & Props) {
       );
     case "contact":
       return profile.contact_email ? (
-        <ContactBlock title={blockTitle(block)} text={block.config.text} email={profile.contact_email} />
+        <ContactBlock title={blockTitle(block)} text={block.config.text} email={profile.contact_email} theme={theme} />
       ) : (
         <Placeholder show={preview}>Укажите «Email для связи» в профиле, чтобы показать контакты</Placeholder>
       );
   }
 }
 
-function Section({ title, children }: { title?: string; children: React.ReactNode }) {
+function Section({ title, theme, children }: { title?: string; theme: Theme; children: React.ReactNode }) {
   return (
     <section className="flex flex-col gap-4">
-      {title && <h2 className="text-lg font-semibold">{title}</h2>}
+      {title && <h2 className={theme.heading}>{title}</h2>}
       {children}
     </section>
   );
@@ -97,19 +108,23 @@ function Section({ title, children }: { title?: string; children: React.ReactNod
 function Placeholder({ show, children }: { show?: boolean; children: React.ReactNode }) {
   if (!show) return null;
   return (
-    <div className="rounded-lg border border-dashed p-4 text-center text-sm text-muted-foreground">{children}</div>
+    <div className="rounded-lg border border-dashed border-border p-4 text-center text-sm text-muted-foreground">
+      {children}
+    </div>
   );
 }
 
-function HeaderBlock({ profile }: { profile: ProfileViewData }) {
+function HeaderBlock({ profile, theme }: { profile: ProfileViewData; theme: Theme }) {
   const name = profile.display_name || `@${profile.username}`;
   return (
     <header className="flex flex-col items-center gap-3 text-center">
       {profile.avatar ? (
         // eslint-disable-next-line @next/next/no-img-element -- served straight from MinIO/S3
-        <img src={profile.avatar} alt={name} className="size-24 rounded-full object-cover" />
+        <img src={profile.avatar} alt={name} className={cn("size-24 object-cover", theme.avatar)} />
       ) : (
-        <div className="flex size-24 items-center justify-center rounded-full bg-muted text-3xl font-semibold uppercase">
+        <div
+          className={cn("flex size-24 items-center justify-center bg-muted text-3xl font-semibold uppercase", theme.avatar)}
+        >
           {(profile.display_name || profile.username)[0]}
         </div>
       )}
@@ -141,7 +156,15 @@ function HeaderBlock({ profile }: { profile: ProfileViewData }) {
   );
 }
 
-function LinksBlock({ links, config }: { links: ProfileViewData["links"]; config: BlockConfigs["links"] }) {
+function LinksBlock({
+  links,
+  config,
+  theme,
+}: {
+  links: ProfileViewData["links"];
+  config: BlockConfigs["links"];
+  theme: Theme;
+}) {
   if (config.layout === "icons") {
     return (
       <nav className="flex flex-wrap justify-center gap-3">
@@ -153,7 +176,7 @@ function LinksBlock({ links, config }: { links: ProfileViewData["links"]; config
             rel="noreferrer"
             title={link.title}
             aria-label={link.title}
-            className="flex size-11 items-center justify-center rounded-full border transition-colors hover:bg-muted"
+            className={cn("flex size-11 items-center justify-center transition-all", theme.iconLink)}
           >
             <LinkIcon icon={link.icon ?? "website"} className="size-5" />
           </a>
@@ -169,7 +192,7 @@ function LinksBlock({ links, config }: { links: ProfileViewData["links"]; config
           href={link.url}
           target="_blank"
           rel="noreferrer"
-          className="flex items-center gap-3 rounded-lg border px-4 py-3 font-medium transition-colors hover:bg-muted"
+          className={cn("flex items-center gap-3 px-4 py-3 font-medium transition-all", theme.link)}
         >
           <LinkIcon icon={link.icon ?? "website"} />
           <span className="flex-1">{link.title}</span>
@@ -179,11 +202,11 @@ function LinksBlock({ links, config }: { links: ProfileViewData["links"]; config
   );
 }
 
-function ProjectsGrid({ projects }: { projects: Project[] }) {
+function ProjectsGrid({ projects, theme }: { projects: Project[]; theme: Theme }) {
   return (
     <div className={cn("grid gap-4", projects.length > 1 && "sm:grid-cols-2")}>
       {projects.map((project) => (
-        <article key={project.id} className="flex flex-col overflow-hidden rounded-lg border">
+        <article key={project.id} className={cn("flex flex-col overflow-hidden", theme.card)}>
           {project.image && (
             // eslint-disable-next-line @next/next/no-img-element -- served straight from MinIO/S3
             <img src={project.image} alt="" className="aspect-video w-full object-cover" />
@@ -218,14 +241,14 @@ function ProjectsGrid({ projects }: { projects: Project[] }) {
   );
 }
 
-function ContactBlock({ title, text, email }: { title: string; text: string; email: string }) {
+function ContactBlock({ title, text, email, theme }: { title: string; text: string; email: string; theme: Theme }) {
   return (
-    <section className="flex flex-col items-center gap-3 rounded-xl bg-muted px-6 py-8 text-center">
+    <section className={cn("flex flex-col items-center gap-3 px-6 py-8 text-center", theme.contact)}>
       <h2 className="text-lg font-semibold">{title}</h2>
       {text && <p className="max-w-prose text-muted-foreground">{text}</p>}
       <a
         href={`mailto:${email}`}
-        className="mt-1 flex items-center gap-2 rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-background"
+        className="mt-1 flex items-center gap-2 rounded-full bg-profile-accent px-5 py-2.5 text-sm font-medium text-profile-accent-foreground"
       >
         <MailIcon className="size-4" /> Написать
       </a>

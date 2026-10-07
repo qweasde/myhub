@@ -97,3 +97,10 @@ def test_public_profile_hidden_when_unpublished(anon, api):
 def test_public_profile_hidden_for_inactive_user(anon, user):
     User.objects.filter(pk=user.pk).update(is_active=False)
     assert anon.get("/api/v1/profiles/islam").status_code == 404
+
+
+def test_theme(api, anon):
+    assert api.get("/api/v1/me/profile").json()["theme"] == "minimal"
+    assert api.patch("/api/v1/me/profile", {"theme": "dark"}, format="json").status_code == 200
+    assert anon.get("/api/v1/profiles/islam").json()["theme"] == "dark"
+    assert api.patch("/api/v1/me/profile", {"theme": "neon"}, format="json").status_code == 400

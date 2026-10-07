@@ -1,30 +1,28 @@
-import { notFound } from "next/navigation";
-import { Suspense } from "react";
-import { ProfileView, type ProfileViewData } from "@/components/profile-view";
-import { api, ApiError } from "@/lib/api";
+import type { Metadata } from "next";
+import { ProfileView } from "@/components/profile-view";
+import { getPublicProfile, profileDescription, profileTitle } from "@/lib/public-profile";
 
-// Served at /@username via the rewrite in next.config.ts. Themes and OG tags come in step 5.
-export default function PublicProfilePage({ params }: PageProps<"/u/[username]">) {
-  return (
-    <main className="mx-auto w-full max-w-2xl flex-1 px-5 py-16">
-      <Suspense fallback={<div className="mx-auto size-24 animate-pulse rounded-full bg-muted" />}>
-        {params.then(({ username }) => (
-          <Profile username={username} />
-        ))}
-      </Suspense>
-    </main>
-  );
+// Served at /@username via the rewrite in next.config.ts. Unknown usernames are answered
+// with a real 404 by proxy.ts before rendering; notFound() below is the fallback.
+// The page awaits its data at the top (one fast API call) instead of streaming it behind a
+// Suspense fallback, so crawlers get complete HTML. That makes it a blocking route by design.
+export const instant = false;
+
+export async function generateMetadata({ params }: PageProps<"/u/[username]">): Promise<Metadata> {
+  const profile = await getPublicProfile((await params).username);
+  const title = profileTitle(profile);
+  const description = profileDescription(profile);
+  const url = `/@${profile.username}`;
+  return {
+    title: { absolute: `${title} · MyHub` },
+    description,
+    alternates: { canonical: url },
+    openGraph: { type: "profile", siteName: "MyHub", locale: "ru_RU", title, description, url },
+    twitter: { card: "summary_large_image", title, description },
+  };
 }
 
-async function getProfile(username: string): Promise<ProfileViewData> {
-  try {
-    return await api<ProfileViewData>(`/profiles/${encodeURIComponent(username)}`);
-  } catch (error) {
-    if (error instanceof ApiError && error.status === 404) notFound();
-    throw error;
-  }
-}
-
-async function Profile({ username }: { username: string }) {
-  return <ProfileView profile={await getProfile(username)} />;
+export default async function PublicProfilePage({ params }: PageProps<"/u/[username]">) {
+  const profile = await getPublicProfile((await params).username);
+  return <ProfileView profile={profile} className="flex-1" />;
 }

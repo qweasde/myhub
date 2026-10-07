@@ -20,6 +20,13 @@ def upload_project_image(instance, filename):
 
 
 class Profile(models.Model):
+    class Theme(models.TextChoices):
+        MINIMAL = "minimal", "Минимализм"
+        DARK = "dark", "Тёмная"
+        DEVELOPER = "developer", "Разработчик"
+        PORTFOLIO = "portfolio", "Портфолио"
+        CREATIVE = "creative", "Креатив"
+
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile"
     )
@@ -30,6 +37,7 @@ class Profile(models.Model):
     website = models.URLField(blank=True)
     contact_email = models.EmailField(blank=True)
     avatar = models.ImageField(upload_to=upload_avatar, blank=True)
+    theme = models.CharField(max_length=20, choices=Theme.choices, default=Theme.MINIMAL)
     is_published = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

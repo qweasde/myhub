@@ -389,6 +389,7 @@ export interface components {
             contact_email?: string;
             /** Format: uri */
             readonly avatar?: string | null;
+            theme?: components["schemas"]["ThemeEnum"];
             is_published?: boolean;
         };
         PatchedProject: {
@@ -418,6 +419,7 @@ export interface components {
             contact_email?: string;
             /** Format: uri */
             readonly avatar: string | null;
+            theme?: components["schemas"]["ThemeEnum"];
             is_published?: boolean;
         };
         Project: {
@@ -454,6 +456,7 @@ export interface components {
             contact_email?: string;
             /** Format: uri */
             readonly avatar: string | null;
+            theme?: components["schemas"]["ThemeEnum"];
             readonly blocks: components["schemas"]["PublicBlock"][];
             readonly links: components["schemas"]["PublicLink"][];
             readonly projects: components["schemas"]["Project"][];
@@ -467,6 +470,15 @@ export interface components {
             name: string;
             readonly order: number;
         };
+        /**
+         * @description * `minimal` - Минимализм
+         *     * `dark` - Тёмная
+         *     * `developer` - Разработчик
+         *     * `portfolio` - Портфолио
+         *     * `creative` - Креатив
+         * @enum {string}
+         */
+        ThemeEnum: "minimal" | "dark" | "developer" | "portfolio" | "creative";
         /**
          * @description * `profile` - Шапка профиля
          *     * `links` - Ссылки

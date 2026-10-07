@@ -6,6 +6,8 @@ import "./globals.css";
 import { Providers } from "@/components/providers";
 
 export const metadata: Metadata = {
+  // Absolute URLs for canonical links and og:image; set SITE_URL in production
+  metadataBase: new URL(process.env.SITE_URL ?? "http://localhost:3000"),
   title: { default: "MyHub", template: "%s · MyHub" },
   description: "Персональный сайт, который собирается из твоих данных.",
 };
