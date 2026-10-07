@@ -12,11 +12,10 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import NextLink from "next/link";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { ConfirmDelete } from "@/components/confirm-delete";
 import { PageHeader } from "@/components/page-header";
-import { ProfileView, type ProfileViewData } from "@/components/profile-view";
 import { DragHandle, SortableList } from "@/components/sortable-list";
 import { Button } from "@/components/ui/button";
 import {
@@ -50,67 +49,28 @@ const ICONS: Record<BlockType, LucideIcon> = {
 
 export default function BuilderPage() {
   const blocks = useCollection("blocks");
-  const preview = usePreviewData();
 
   return (
     <>
       <PageHeader
         title="Конструктор"
-        description="Страница собирается из блоков. Перетаскивайте их, скрывайте и настраивайте — превью обновляется сразу."
+        description="Страница собирается из блоков. Перетаскивайте их, скрывайте и настраивайте — превью справа обновляется сразу."
         action={<AddBlockDialog blocks={blocks.list.data ?? []} />}
       />
-      <div className="grid grid-cols-1 gap-8 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
-        <div>
-          {blocks.list.data ? (
-            <SortableList
-              items={blocks.list.data}
-              onReorder={(ids) => blocks.reorder.mutate(ids)}
-              renderItem={(block) => <BlockRow block={block} />}
-            />
-          ) : (
-            <Skeleton className="h-64" />
-          )}
-        </div>
-        <div className="flex flex-col gap-4 xl:sticky xl:top-6 xl:self-start">
-          <ThemePicker />
-          <div>
-            <p className="mb-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">Превью</p>
-            <div className="max-h-[75vh] overflow-y-auto rounded-xl border shadow-sm">
-              {preview ? <ProfileView profile={preview} preview /> : <Skeleton className="h-96" />}
-            </div>
-          </div>
-        </div>
+      <div className="flex max-w-2xl flex-col gap-6">
+        <ThemePicker />
+        {blocks.list.data ? (
+          <SortableList
+            items={blocks.list.data}
+            onReorder={(ids) => blocks.reorder.mutate(ids)}
+            renderItem={(block) => <BlockRow block={block} />}
+          />
+        ) : (
+          <Skeleton className="h-64" />
+        )}
       </div>
     </>
   );
-}
-
-/** What /@username would show, assembled from the dashboard's own (already cached) queries. */
-function usePreviewData(): ProfileViewData | undefined {
-  const { data: profile } = useProfile();
-  const blocks = useCollection("blocks").list.data;
-  const links = useCollection("links").list.data;
-  const projects = useCollection("projects").list.data;
-  const skills = useCollection("skills").list.data;
-
-  return useMemo(() => {
-    if (!profile || !blocks || !links || !projects || !skills) return undefined;
-    return {
-      username: profile.username,
-      display_name: profile.display_name,
-      profession: profile.profession,
-      bio: profile.bio,
-      location: profile.location,
-      website: profile.website,
-      contact_email: profile.contact_email,
-      avatar: profile.avatar,
-      theme: profile.theme,
-      blocks: blocks.filter((b) => b.is_visible ?? true) as unknown as AnyBlock[],
-      links: links.filter((l) => l.is_visible ?? true).map(({ id, title, url, icon }) => ({ id, title, url, icon })),
-      projects,
-      skills: skills.map((s) => s.name),
-    };
-  }, [profile, blocks, links, projects, skills]);
 }
 
 function ThemePicker() {

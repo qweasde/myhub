@@ -13,6 +13,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
+import { LivePreviewButton, LivePreviewPanel } from "@/components/live-preview";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { auth } from "@/lib/auth";
@@ -28,11 +29,21 @@ const NAV = [
   { href: "/dashboard/skills", label: "Навыки", icon: SparklesIcon },
 ];
 
+// Pages that change what /@username shows get the live preview next to them
+const PREVIEW_PAGES = new Set([
+  "/dashboard/builder",
+  "/dashboard/profile",
+  "/dashboard/links",
+  "/dashboard/projects",
+  "/dashboard/skills",
+]);
+
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const { data: me, isError } = useMe();
   const refreshMe = useRefreshMe();
+  const showPreview = PREVIEW_PAGES.has(pathname);
 
   useEffect(() => {
     if (me === null) router.replace(`/login?next=${encodeURIComponent(pathname)}`);
@@ -54,7 +65,12 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-1 flex-col">
       <header className="border-b">
-        <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
+        <div
+          className={cn(
+            "mx-auto flex h-14 w-full items-center justify-between px-4 sm:px-6",
+            showPreview ? "max-w-[1440px]" : "max-w-6xl",
+          )}
+        >
           <Link href="/dashboard" className="font-semibold tracking-tight">
             MyHub
           </Link>
@@ -82,7 +98,12 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           Подтвердите email: ссылка отправлена на <span className="font-medium">{me.email}</span>
         </div>
       )}
-      <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-4 py-6 sm:px-6 md:flex-row md:gap-10 md:py-10">
+      <div
+        className={cn(
+          "mx-auto flex w-full flex-1 flex-col gap-6 px-4 py-6 sm:px-6 md:flex-row md:gap-10 md:py-10",
+          showPreview ? "max-w-[1440px]" : "max-w-6xl",
+        )}
+      >
         <nav className="-mx-4 flex gap-1 overflow-x-auto px-4 md:mx-0 md:w-48 md:shrink-0 md:flex-col md:px-0">
           {NAV.map(({ href, label, icon: Icon }) => (
             <Link
@@ -99,6 +120,12 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           ))}
         </nav>
         <main className="min-w-0 flex-1">{children}</main>
+        {showPreview && (
+          <>
+            <LivePreviewPanel />
+            <LivePreviewButton />
+          </>
+        )}
       </div>
     </div>
   );
