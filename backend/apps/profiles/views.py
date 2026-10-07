@@ -12,8 +12,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .images import process_image
-from .models import Link, Profile, Project, Skill
+from .models import Block, Link, Profile, Project, Skill, create_default_blocks
 from .serializers import (
+    BlockSerializer,
     ImageUploadSerializer,
     LinkSerializer,
     ProfileSerializer,
@@ -28,7 +29,9 @@ PROJECT_IMAGE_SIZE = 1600
 
 
 def get_own_profile(request) -> Profile:
-    profile, _ = Profile.objects.get_or_create(user=request.user)
+    profile, created = Profile.objects.get_or_create(user=request.user)
+    if created:
+        create_default_blocks(profile)
     return profile
 
 
@@ -170,13 +173,24 @@ class MySkillsViewSet(OwnedOrderedViewSet):
     serializer_class = SkillSerializer
 
 
+class MyBlocksViewSet(OwnedOrderedViewSet):
+    model = Block
+    serializer_class = BlockSerializer
+    limit = 30
+
+    def perform_destroy(self, instance):
+        if instance.type in Block.UNDELETABLE:
+            raise ValidationError({"detail": "Этот блок нельзя удалить, но можно скрыть."})
+        instance.delete()
+
+
 class PublicProfileView(generics.RetrieveAPIView):
     serializer_class = PublicProfileSerializer
     permission_classes = [AllowAny]
 
     def get_object(self):
         queryset = Profile.objects.select_related("user").prefetch_related(
-            "links", "projects", "skills"
+            "blocks", "links", "projects", "skills"
         )
         return get_object_or_404(
             queryset,

@@ -36,6 +36,59 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/blocks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description CRUD over the current user's items + bulk reorder. Subclasses set model/serializer/limit. */
+        get: operations["me_blocks_list"];
+        put?: never;
+        /** @description CRUD over the current user's items + bulk reorder. Subclasses set model/serializer/limit. */
+        post: operations["me_blocks_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/blocks/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** @description CRUD over the current user's items + bulk reorder. Subclasses set model/serializer/limit. */
+        delete: operations["me_blocks_destroy"];
+        options?: never;
+        head?: never;
+        /** @description CRUD over the current user's items + bulk reorder. Subclasses set model/serializer/limit. */
+        patch: operations["me_blocks_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/me/blocks/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description CRUD over the current user's items + bulk reorder. Subclasses set model/serializer/limit. */
+        post: operations["me_blocks_reorder_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me/links": {
         parameters: {
             query?: never;
@@ -266,6 +319,13 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        Block: {
+            readonly id: number;
+            type: components["schemas"]["TypeEnum"];
+            is_visible?: boolean;
+            config?: unknown;
+            readonly order: number;
+        };
         /**
          * @description * `github` - Github
          *     * `linkedin` - Linkedin
@@ -303,6 +363,13 @@ export interface components {
              * Format: date-time
              */
             readonly date_joined: string;
+        };
+        PatchedBlock: {
+            readonly id?: number;
+            type?: components["schemas"]["TypeEnum"];
+            is_visible?: boolean;
+            config?: unknown;
+            readonly order?: number;
         };
         PatchedLink: {
             readonly id?: number;
@@ -365,6 +432,11 @@ export interface components {
             is_featured?: boolean;
             readonly order: number;
         };
+        PublicBlock: {
+            readonly id: number;
+            type: components["schemas"]["TypeEnum"];
+            config?: unknown;
+        };
         PublicLink: {
             readonly id: number;
             title: string;
@@ -382,6 +454,7 @@ export interface components {
             contact_email?: string;
             /** Format: uri */
             readonly avatar: string | null;
+            readonly blocks: components["schemas"]["PublicBlock"][];
             readonly links: components["schemas"]["PublicLink"][];
             readonly projects: components["schemas"]["Project"][];
             readonly skills: string[];
@@ -394,6 +467,16 @@ export interface components {
             name: string;
             readonly order: number;
         };
+        /**
+         * @description * `profile` - Шапка профиля
+         *     * `links` - Ссылки
+         *     * `text` - Текст
+         *     * `projects` - Проекты
+         *     * `skills` - Навыки
+         *     * `contact` - Контакты
+         * @enum {string}
+         */
+        TypeEnum: "profile" | "links" | "text" | "projects" | "skills" | "contact";
     };
     responses: never;
     parameters: never;
@@ -440,6 +523,123 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Me"];
                 };
+            };
+        };
+    };
+    me_blocks_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Block"][];
+                };
+            };
+        };
+    };
+    me_blocks_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Block"];
+                "application/x-www-form-urlencoded": components["schemas"]["Block"];
+                "multipart/form-data": components["schemas"]["Block"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Block"];
+                };
+            };
+        };
+    };
+    me_blocks_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this block. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    me_blocks_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this block. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedBlock"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedBlock"];
+                "multipart/form-data": components["schemas"]["PatchedBlock"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Block"];
+                };
+            };
+        };
+    };
+    me_blocks_reorder_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Reorder"];
+                "application/x-www-form-urlencoded": components["schemas"]["Reorder"];
+                "multipart/form-data": components["schemas"]["Reorder"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

@@ -71,7 +71,10 @@ services:
     pull_policy: never
     command: celery -A config beat -l info --schedule /tmp/celerybeat-schedule
 
+  # Off by default: Docker Desktop on Windows/macOS drops file-change events from host
+  # mounts, so Next dev runs on the host (`npm run dev`). `--profile full` runs it here.
   frontend:
+    profiles: [full]
     build: ./frontend
     # node_modules lives in a volume that survives container recreation, so sync it
     # with package-lock.json on start (fast no-op when nothing changed)

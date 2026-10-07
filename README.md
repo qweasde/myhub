@@ -9,11 +9,17 @@
 
 Браузер ходит только на Next.js: `/api/*`, `/_allauth/*` и `/media/*` проксируются в Django (rewrites в `frontend/next.config.ts`), поэтому cookie сессии и CSRF работают без CORS. Публичный профиль `/@username` переписывается на маршрут `/u/[username]`.
 
-## Запуск через Docker
+## Запуск для разработки
+
+Инфраструктура и Django — в Docker, Next.js — локально. Docker Desktop на Windows/macOS теряет события изменения файлов из примонтированных папок, поэтому Next в контейнере не замечает новые файлы ([документация Next](https://nextjs.org/docs/app/guides/local-development#2-avoid-common-docker-pitfalls)). Django это не касается: его автоперезагрузка опрашивает файлы сама.
 
 ```bash
 cp backend/.env.example backend/.env
-docker compose up --build
+docker compose up -d            # db, redis, minio, mailpit, backend, worker, beat
+
+cd frontend
+npm install
+npm run dev                      # http://localhost:3000
 ```
 
 | Сервис | Адрес |
@@ -26,23 +32,15 @@ docker compose up --build
 
 Суперпользователь: `docker compose exec backend python manage.py createsuperuser`
 
-## Локальный запуск без Docker для кода
+Всё целиком в Docker, включая фронтенд (например, чтобы проверить сборку): `docker compose --profile full up --build`.
 
-Инфраструктура в Docker, код — локально:
+Бэкенд без Docker:
 
 ```bash
-docker compose up -d db redis minio minio-init mailpit
-
 cd backend
 python -m venv .venv && .venv/Scripts/activate   # Linux/macOS: source .venv/bin/activate
 pip install -r requirements-dev.txt
-cp .env.example .env
-python manage.py migrate
-python manage.py runserver
-
-cd ../frontend
-npm install
-npm run dev
+python manage.py migrate && python manage.py runserver
 ```
 
 ## Типы API для фронтенда
@@ -65,7 +63,7 @@ cd frontend && npm run lint && npm run build
 1. [x] Каркас: монорепо, docker-compose, Django + Next.js, CI
 2. [x] Аккаунты: регистрация/вход через allauth headless, username, защита `/dashboard`
 3. [x] Profile, Links, Projects, Skills: модели, API, страницы dashboard
-4. [ ] Blocks: конструктор, drag & drop (dnd-kit), live preview
+4. [x] Blocks: конструктор, drag & drop (dnd-kit), live preview
 5. [ ] Публичная страница `/@username`: темы, OG-теги, адаптив
 6. [ ] Аналитика: события, агрегация в Celery, `/dashboard/analytics`
 7. [ ] Деплой на VPS (Docker Compose + Caddy)

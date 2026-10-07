@@ -5,7 +5,7 @@ from django.core.validators import URLValidator, validate_email
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from .models import Link, Profile, Project, Skill
+from .models import Block, Link, Profile, Project, Skill
 
 
 @extend_schema_field({"type": "string", "format": "uri", "nullable": True, "readOnly": True})
@@ -152,6 +152,84 @@ class ReorderSerializer(serializers.Serializer):
     ids = serializers.ListField(child=serializers.IntegerField(), allow_empty=True)
 
 
+# --- Blocks ----------------------------------------------------------------
+
+
+class TitledConfig(serializers.Serializer):
+    title = serializers.CharField(max_length=60, allow_blank=True, default="")
+
+
+class ProfileBlockConfig(serializers.Serializer):
+    pass
+
+
+class LinksBlockConfig(serializers.Serializer):
+    layout = serializers.ChoiceField(choices=["list", "icons"], default="list")
+
+
+class TextBlockConfig(TitledConfig):
+    body = serializers.CharField(max_length=5000, allow_blank=True, default="")
+
+
+class ProjectsBlockConfig(TitledConfig):
+    featured_only = serializers.BooleanField(default=False)
+
+
+class SkillsBlockConfig(TitledConfig):
+    pass
+
+
+class ContactBlockConfig(TitledConfig):
+    text = serializers.CharField(max_length=500, allow_blank=True, default="")
+
+
+BLOCK_CONFIGS = {
+    Block.Type.PROFILE: ProfileBlockConfig,
+    Block.Type.LINKS: LinksBlockConfig,
+    Block.Type.TEXT: TextBlockConfig,
+    Block.Type.PROJECTS: ProjectsBlockConfig,
+    Block.Type.SKILLS: SkillsBlockConfig,
+    Block.Type.CONTACT: ContactBlockConfig,
+}
+
+
+def clean_block_config(block_type: str, config) -> dict:
+    """Validate against the type's schema; unknown keys are dropped, missing ones get defaults."""
+    serializer = BLOCK_CONFIGS[block_type](data=config if isinstance(config, dict) else {})
+    if not serializer.is_valid():
+        raise serializers.ValidationError({"config": serializer.errors})
+    return dict(serializer.validated_data)
+
+
+class BlockSerializer(serializers.ModelSerializer):
+    config = serializers.JSONField(required=False)
+
+    class Meta:
+        model = Block
+        fields = ["id", "type", "is_visible", "config", "order"]
+        read_only_fields = ["order"]
+
+    def validate_type(self, value):
+        if self.instance and value != self.instance.type:
+            raise serializers.ValidationError("Тип блока нельзя изменить.")
+        if not self.instance and value not in Block.REPEATABLE:
+            if self.context["profile"].blocks.filter(type=value).exists():
+                raise serializers.ValidationError("Такой блок уже есть на странице.")
+        return value
+
+    def validate(self, attrs):
+        block_type = attrs.get("type") or self.instance.type
+        if "config" in attrs or not self.instance:
+            attrs["config"] = clean_block_config(block_type, attrs.get("config", {}))
+        return attrs
+
+
+class PublicBlockSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Block
+        fields = ["id", "type", "config"]
+
+
 class PublicLinkSerializer(serializers.ModelSerializer):
     class Meta:
         model = Link
@@ -159,16 +237,23 @@ class PublicLinkSerializer(serializers.ModelSerializer):
 
 
 class PublicProfileSerializer(ProfileSerializer):
+    blocks = serializers.SerializerMethodField()
     links = serializers.SerializerMethodField()
     projects = ProjectSerializer(many=True, read_only=True)
     skills = serializers.SlugRelatedField(slug_field="name", many=True, read_only=True)
 
     class Meta(ProfileSerializer.Meta):
         fields = [f for f in ProfileSerializer.Meta.fields if f != "is_published"] + [
+            "blocks",
             "links",
             "projects",
             "skills",
         ]
+
+    @extend_schema_field(PublicBlockSerializer(many=True))
+    def get_blocks(self, profile):
+        visible = [block for block in profile.blocks.all() if block.is_visible]
+        return PublicBlockSerializer(visible, many=True).data
 
     @extend_schema_field(PublicLinkSerializer(many=True))
     def get_links(self, profile):

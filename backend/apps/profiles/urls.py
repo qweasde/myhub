@@ -7,6 +7,7 @@ router = SimpleRouter(trailing_slash=False)
 router.register("me/links", views.MyLinksViewSet, basename="my-links")
 router.register("me/projects", views.MyProjectsViewSet, basename="my-projects")
 router.register("me/skills", views.MySkillsViewSet, basename="my-skills")
+router.register("me/blocks", views.MyBlocksViewSet, basename="my-blocks")
 
 urlpatterns = [
     path("me/profile", views.MyProfileView.as_view(), name="my-profile"),

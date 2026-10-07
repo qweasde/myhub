@@ -1,6 +1,14 @@
 "use client";
 
-import { ExternalLinkIcon, FolderKanbanIcon, LayoutDashboardIcon, LinkIcon, SparklesIcon, UserIcon } from "lucide-react";
+import {
+  ExternalLinkIcon,
+  FolderKanbanIcon,
+  LayoutDashboardIcon,
+  LayoutTemplateIcon,
+  LinkIcon,
+  SparklesIcon,
+  UserIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -13,6 +21,7 @@ import { cn } from "@/lib/utils";
 
 const NAV = [
   { href: "/dashboard", label: "Обзор", icon: LayoutDashboardIcon },
+  { href: "/dashboard/builder", label: "Конструктор", icon: LayoutTemplateIcon },
   { href: "/dashboard/profile", label: "Профиль", icon: UserIcon },
   { href: "/dashboard/links", label: "Ссылки", icon: LinkIcon },
   { href: "/dashboard/projects", label: "Проекты", icon: FolderKanbanIcon },

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Link, Profile, Project, Skill
+from .models import Block, Link, Profile, Project, Skill
 
 
 class LinkInline(admin.TabularInline):
@@ -18,9 +18,14 @@ class SkillInline(admin.TabularInline):
     extra = 0
 
 
+class BlockInline(admin.TabularInline):
+    model = Block
+    extra = 0
+
+
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
     list_display = ["user", "display_name", "profession", "is_published", "updated_at"]
     list_filter = ["is_published"]
     search_fields = ["user__username", "display_name"]
-    inlines = [LinkInline, ProjectInline, SkillInline]
+    inlines = [BlockInline, LinkInline, ProjectInline, SkillInline]

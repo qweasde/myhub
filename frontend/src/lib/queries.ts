@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { api, json, uploadImage, type Link, type Profile, type Project, type Skill } from "@/lib/api";
+import { api, json, uploadImage, type Block, type Link, type Profile, type Project, type Skill } from "@/lib/api";
 
 export const keys = {
   profile: ["me", "profile"] as const,
@@ -44,9 +44,9 @@ export function useAvatar() {
   };
 }
 
-// --- Ordered collections: links, projects, skills ------------------------
+// --- Ordered collections: links, projects, skills, blocks ----------------
 
-type Collections = { links: Link; projects: Project; skills: Skill };
+type Collections = { links: Link; projects: Project; skills: Skill; blocks: Block };
 export type CollectionName = keyof Collections;
 
 export function useCollection<N extends CollectionName>(name: N) {

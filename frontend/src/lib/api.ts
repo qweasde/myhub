@@ -11,6 +11,7 @@ export type LinkIcon = Schemas["IconEnum"];
 export type Project = Schemas["Project"];
 export type Skill = Schemas["Skill"];
 export type PublicProfile = Schemas["PublicProfile"];
+export type Block = Omit<Schemas["Block"], "config"> & { config: Record<string, unknown> };
 
 export class ApiError extends Error {
   constructor(

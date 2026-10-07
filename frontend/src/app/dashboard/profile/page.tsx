@@ -148,7 +148,7 @@ function ProfileForm({ profile }: { profile: Profile }) {
           name="contact_email"
           label="Email для связи"
           type="email"
-          description="Будет виден на публичной странице. Можно не указывать."
+          description="Показывается в блоке «Контакты» на публичной странице. Можно не указывать."
         />
         <FieldSeparator />
         <SwitchField

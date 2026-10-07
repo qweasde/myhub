@@ -100,3 +100,41 @@ class Skill(OrderedModel):
 
     def __str__(self):
         return self.name
+
+
+class Block(OrderedModel):
+    """A section of the public page. What it shows comes from the profile; `config` tweaks it."""
+
+    class Type(models.TextChoices):
+        PROFILE = "profile", "Шапка профиля"
+        LINKS = "links", "Ссылки"
+        TEXT = "text", "Текст"
+        PROJECTS = "projects", "Проекты"
+        SKILLS = "skills", "Навыки"
+        CONTACT = "contact", "Контакты"
+
+    # Every type except TEXT may appear at most once per profile
+    REPEATABLE = {Type.TEXT}
+    # The header can be hidden or moved, but not deleted
+    UNDELETABLE = {Type.PROFILE}
+
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="blocks")
+    type = models.CharField(max_length=20, choices=Type.choices)
+    is_visible = models.BooleanField(default=True)
+    config = models.JSONField(default=dict, blank=True)
+
+    class Meta(OrderedModel.Meta):
+        pass
+
+    def __str__(self):
+        return f"{self.get_type_display()} (@{self.profile.user.username})"
+
+
+DEFAULT_BLOCKS = [Block.Type.PROFILE, Block.Type.LINKS, Block.Type.PROJECTS, Block.Type.SKILLS]
+
+
+def create_default_blocks(profile: Profile) -> None:
+    Block.objects.bulk_create(
+        Block(profile=profile, type=block_type, order=order)
+        for order, block_type in enumerate(DEFAULT_BLOCKS, start=1)
+    )
