@@ -34,15 +34,29 @@ async function request(method: string, path: string, body?: unknown): Promise<Au
   const data: AuthResponse = await res.json().catch(() => ({ status: res.status }));
   // 401 is a normal answer here ("not logged in" / "logged out"), only 4xx validation errors throw.
   if (res.status >= 400 && res.status !== 401) {
-    throw new AuthError(res.status, data.errors ?? [{ message: "Что-то пошло не так", code: "unknown" }]);
+    throw new AuthError(res.status, data.errors ?? [{ message: `Ошибка сервера (${res.status})`, code: "unknown" }]);
   }
   return data;
 }
 
+/**
+ * allauth answers login/signup with a bare 409 when the browser already has a session
+ * (e.g. an old login, or switching accounts). End that session and try once more.
+ */
+async function withFreshSession(path: string, body: unknown): Promise<AuthResponse> {
+  try {
+    return await request("POST", path, body);
+  } catch (error) {
+    if (!(error instanceof AuthError && error.status === 409)) throw error;
+    await request("DELETE", "/auth/session");
+    return request("POST", path, body);
+  }
+}
+
 export const auth = {
-  login: (email: string, password: string) => request("POST", "/auth/login", { email, password }),
+  login: (email: string, password: string) => withFreshSession("/auth/login", { email, password }),
   signup: (email: string, username: string, password: string) =>
-    request("POST", "/auth/signup", { email, username, password }),
+    withFreshSession("/auth/signup", { email, username, password }),
   logout: () => request("DELETE", "/auth/session"),
   requestPasswordReset: (email: string) => request("POST", "/auth/password/request", { email }),
   resetPassword: (key: string, password: string) =>
