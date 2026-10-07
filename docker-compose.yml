@@ -1,0 +1,83 @@
+name: myhub
+
+x-backend: &backend
+  build: ./backend
+  env_file: ./backend/.env
+  environment:
+    DATABASE_URL: postgres://myhub:myhub@db:5432/myhub
+    REDIS_URL: redis://redis:6379/0
+    EMAIL_HOST: mailpit
+    S3_ENDPOINT_URL: http://minio:9000
+  volumes:
+    - ./backend:/app
+  depends_on:
+    db:
+      condition: service_healthy
+    redis:
+      condition: service_started
+
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: myhub
+      POSTGRES_USER: myhub
+      POSTGRES_PASSWORD: myhub
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myhub"]
+      interval: 3s
+      retries: 20
+
+  redis:
+    image: redis:8-alpine
+    ports: ["6379:6379"]
+
+  minio:
+    image: minio/minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: myhub
+      MINIO_ROOT_PASSWORD: myhub-secret
+    ports: ["9000:9000", "9001:9001"]
+    volumes: [miniodata:/data]
+
+  minio-init:
+    image: minio/mc
+    depends_on: [minio]
+    entrypoint: >
+      sh -c "until mc alias set local http://minio:9000 myhub myhub-secret; do sleep 1; done;
+      mc mb --ignore-existing local/myhub && mc anonymous set download local/myhub"
+
+  mailpit:
+    image: axllent/mailpit
+    ports: ["8025:8025", "1025:1025"]
+
+  backend:
+    <<: *backend
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    ports: ["8000:8000"]
+
+  worker:
+    <<: *backend
+    command: celery -A config worker -l info
+
+  beat:
+    <<: *backend
+    command: celery -A config beat -l info
+
+  frontend:
+    build: ./frontend
+    environment:
+      BACKEND_URL: http://backend:8000
+    ports: ["3000:3000"]
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on: [backend]
+
+volumes:
+  pgdata:
+  miniodata:
