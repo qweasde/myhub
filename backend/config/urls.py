@@ -20,6 +20,7 @@ urlpatterns = [
     path("_allauth/", include("allauth.headless.urls")),
     path("api/v1/", include(api_urlpatterns)),
     path("api/v1/", include("apps.profiles.urls")),
+    path("api/v1/", include("apps.analytics.urls")),
 ]
 
 if settings.DEBUG:

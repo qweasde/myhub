@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ProfileTracker } from "@/components/profile-tracker";
 import { ProfileView } from "@/components/profile-view";
 import { getPublicProfile, profileDescription, profileTitle } from "@/lib/public-profile";
 
@@ -24,5 +25,10 @@ export async function generateMetadata({ params }: PageProps<"/u/[username]">): 
 
 export default async function PublicProfilePage({ params }: PageProps<"/u/[username]">) {
   const profile = await getPublicProfile((await params).username);
-  return <ProfileView profile={profile} className="flex-1" />;
+  return (
+    <>
+      <ProfileView profile={profile} className="flex-1" />
+      <ProfileTracker username={profile.username} />
+    </>
+  );
 }

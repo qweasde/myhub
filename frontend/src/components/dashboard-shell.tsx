@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  ChartLineIcon,
   ExternalLinkIcon,
   FolderKanbanIcon,
   LayoutDashboardIcon,
@@ -27,6 +28,7 @@ const NAV = [
   { href: "/dashboard/links", label: "Ссылки", icon: LinkIcon },
   { href: "/dashboard/projects", label: "Проекты", icon: FolderKanbanIcon },
   { href: "/dashboard/skills", label: "Навыки", icon: SparklesIcon },
+  { href: "/dashboard/analytics", label: "Аналитика", icon: ChartLineIcon },
 ];
 
 // Pages that change what /@username shows get the live preview next to them

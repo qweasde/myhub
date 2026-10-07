@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import environ
+from celery.schedules import crontab
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -37,6 +38,7 @@ INSTALLED_APPS = [
     "apps.core",
     "apps.accounts",
     "apps.profiles",
+    "apps.analytics",
 ]
 
 MIDDLEWARE = [
@@ -130,6 +132,9 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_THROTTLE_RATES": {"track": "120/min"},
+    # One proxy (Next.js) in front of Django: take the client IP from X-Forwarded-For
+    "NUM_PROXIES": 1,
 }
 SPECTACULAR_SETTINGS = {
     "TITLE": "MyHub API",
@@ -156,3 +161,12 @@ ACCOUNT_ADAPTER = "apps.accounts.adapter.AccountAdapter"
 CELERY_BROKER_URL = env("REDIS_URL", default="redis://localhost:6379/0")
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 CELERY_TIMEZONE = TIME_ZONE
+CELERY_BEAT_SCHEDULE = {
+    "purge-old-analytics-events": {
+        "task": "apps.analytics.tasks.purge_old_events",
+        "schedule": crontab(hour=3, minute=30),
+    },
+}
+
+# Analytics
+ANALYTICS_RETENTION_DAYS = env.int("ANALYTICS_RETENTION_DAYS", default=180)

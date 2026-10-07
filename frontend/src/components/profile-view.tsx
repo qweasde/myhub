@@ -174,6 +174,7 @@ function LinksBlock({
             href={link.url}
             target="_blank"
             rel="noreferrer"
+            data-track-link={link.id}
             title={link.title}
             aria-label={link.title}
             className={cn("flex size-11 items-center justify-center transition-all", theme.iconLink)}
@@ -192,6 +193,7 @@ function LinksBlock({
           href={link.url}
           target="_blank"
           rel="noreferrer"
+          data-track-link={link.id}
           className={cn("flex items-center gap-3 px-4 py-3 font-medium transition-all", theme.link)}
         >
           <LinkIcon icon={link.icon ?? "website"} />

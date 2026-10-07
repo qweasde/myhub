@@ -34,7 +34,7 @@ npm run dev                      # http://localhost:3000
 
 Суперпользователь: `docker compose exec backend python manage.py createsuperuser`
 
-Эталонный профиль `@demo` со всеми заполненными данными (вход `demo@myhub.site` / `demo-password-2026`): `docker compose exec backend python manage.py seed_demo`. Повторный запуск возвращает его к исходному виду; загруженное фото сохраняется.
+Эталонный профиль `@demo` со всеми заполненными данными (вход `demo@myhub.site` / `demo-password-2026`): `docker compose exec backend python manage.py seed_demo`. Повторный запуск возвращает его к исходному виду; загруженное фото сохраняется. История просмотров и кликов для графиков: `docker compose exec backend python manage.py seed_demo_analytics` (только аналитика, профиль не трогает).
 
 Всё целиком в Docker, включая фронтенд (например, чтобы проверить сборку): `docker compose --profile full up --build`.
 
@@ -69,5 +69,5 @@ cd frontend && npm run lint && npm run build
 3. [x] Profile, Links, Projects, Skills: модели, API, страницы dashboard
 4. [x] Blocks: конструктор, drag & drop (dnd-kit), live preview
 5. [x] Публичная страница `/@username`: темы, OG-теги, адаптив
-6. [ ] Аналитика: события, агрегация в Celery, `/dashboard/analytics`
+6. [x] Аналитика: просмотры и клики, `/dashboard/analytics`, очистка старых событий в Celery
 7. [ ] Деплой на VPS (Docker Compose + Caddy)
