@@ -19,6 +19,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("_allauth/", include("allauth.headless.urls")),
     path("api/v1/", include(api_urlpatterns)),
+    path("api/v1/", include("apps.profiles.urls")),
 ]
 
 if settings.DEBUG:

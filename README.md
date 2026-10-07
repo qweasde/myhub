@@ -45,6 +45,14 @@ npm install
 npm run dev
 ```
 
+## Типы API для фронтенда
+
+Типы в `frontend/src/lib/api-schema.d.ts` генерируются из OpenAPI-схемы Django. После изменения API (бэкенд запущен):
+
+```bash
+cd frontend && npm run api:types
+```
+
 ## Проверки
 
 ```bash
@@ -56,7 +64,7 @@ cd frontend && npm run lint && npm run build
 
 1. [x] Каркас: монорепо, docker-compose, Django + Next.js, CI
 2. [x] Аккаунты: регистрация/вход через allauth headless, username, защита `/dashboard`
-3. [ ] Profile, Links, Projects, Skills: модели, API, страницы dashboard
+3. [x] Profile, Links, Projects, Skills: модели, API, страницы dashboard
 4. [ ] Blocks: конструктор, drag & drop (dnd-kit), live preview
 5. [ ] Публичная страница `/@username`: темы, OG-теги, адаптив
 6. [ ] Аналитика: события, агрегация в Celery, `/dashboard/analytics`
