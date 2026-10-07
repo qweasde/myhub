@@ -83,7 +83,8 @@ function SortableItem({ id, children }: { id: number; children: React.ReactNode 
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Translate.toString(transform), transition }}
-      className={cn("relative", isDragging && "z-10 opacity-80 shadow-lg")}
+      // Shadow goes on the item itself (*:), so it follows its rounded corners
+      className={cn("relative", isDragging && "z-10 *:shadow-lg")}
     >
       <HandleContext value={{ attributes, listeners }}>{children}</HandleContext>
     </div>

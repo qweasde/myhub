@@ -32,6 +32,8 @@ npm run dev                      # http://localhost:3000
 
 Суперпользователь: `docker compose exec backend python manage.py createsuperuser`
 
+Эталонный профиль `@demo` со всеми заполненными данными (вход `demo@myhub.site` / `demo-password-2026`): `docker compose exec backend python manage.py seed_demo`. Повторный запуск возвращает его к исходному виду; загруженное фото сохраняется.
+
 Всё целиком в Docker, включая фронтенд (например, чтобы проверить сборку): `docker compose --profile full up --build`.
 
 Бэкенд без Docker:

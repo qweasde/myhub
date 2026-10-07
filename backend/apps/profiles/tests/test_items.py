@@ -113,3 +113,15 @@ def test_cannot_touch_other_users_items(api, db):
 def test_link_url_schemes(api, url, status):
     response = api.post("/api/v1/me/links", {"title": "x", "url": url}, format="json")
     assert response.status_code == status
+
+
+def test_seed_demo_is_idempotent(db, capsys):
+    from django.core.management import call_command
+
+    call_command("seed_demo")
+    call_command("seed_demo")
+    demo = User.objects.get(username="demo")
+    assert demo.profile.links.count() == 6
+    assert demo.profile.blocks.count() == 6
+    assert demo.profile.links.get(title="GitHub").icon == "github"
+    assert "Сброшен @demo" in capsys.readouterr().out
